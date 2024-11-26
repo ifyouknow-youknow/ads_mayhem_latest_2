@@ -1,0 +1,42 @@
+name: ads_mayhem_2
+description: "A new Flutter project."
+publish_to: 'none' # Prevents accidental publishing.
+
+version: 2.0.0+1
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  firebase_core: ^3.8.0
+
+  flutter_library_latest:
+    git:
+      url: https://github.com/ifyouknow-youknow/flutter_library_latest.git
+      ref: main
+  flutter_launcher_icons: ^0.14.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+# flutter pub run flutter_launcher_icons:main
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/IMAGES/launcher-icon.png"
+  adaptive_icon_background: "assets/IMAGES/launcher-icon.png"
+  adaptive_icon_foreground: "assets/IMAGES/launcher-icon.png"
+
+flutter:
+  uses-material-design: true
+  assets:
+    - lib/.env
+    - assets/get-started.png
+    - assets/splash.png
+    - assets/launcher-icon.png
