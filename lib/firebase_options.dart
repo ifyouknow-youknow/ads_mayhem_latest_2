@@ -63,6 +63,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '264501829712',
     projectId: 'iic-development',
     storageBucket: 'iic-development.appspot.com',
-    iosBundleId: 'com.example.adsMayhem2',
+    iosBundleId: 'com.iicdev.AdsMahem',
   );
 }

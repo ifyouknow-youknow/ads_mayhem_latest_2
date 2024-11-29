@@ -26,12 +26,12 @@ dev_dependencies:
   flutter_lints: ^4.0.0
 
 # flutter pub run flutter_launcher_icons:main
-flutter_icons:
+flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/IMAGES/launcher-icon.png"
-  adaptive_icon_background: "assets/IMAGES/launcher-icon.png"
-  adaptive_icon_foreground: "assets/IMAGES/launcher-icon.png"
+  image_path: "assets/launcher-icon.png"
+  adaptive_icon_background: "assets/launcher-icon.png"
+  adaptive_icon_foreground: "assets/launcher-icon.png"
 
 flutter:
   uses-material-design: true

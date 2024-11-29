@@ -71,19 +71,20 @@ class _SignUpState extends State<SignUp> {
     });
 
     final user = await auth_CreateUser(_email.text, _password.text, widget.dm);
+
     if (user != null) {
       final success = await firebase_CreateDocument(
           '${widget.dm.appName}_Users', user.uid, {
         'firstName': _firstName.text,
         'lastName': _lastName.text,
         'email':
-            '${widget.dm.appName.replaceAll(" ", "").toLowerCase()})_${_email.text}',
+            '${widget.dm.appName.replaceAll(" ", "").toLowerCase()}_${_email.text}',
         'geohash': _geohash
       });
+      setState(() {
+        widget.dm.setToggleLoading(false);
+      });
       if (success) {
-        setState(() {
-          widget.dm.setToggleLoading(false);
-        });
         nav_PushAndRemove(context, ExploreMain(dm: widget.dm));
       } else {
         setState(() {

@@ -6,6 +6,7 @@ void main() async {
   final dm = DataMaster();
   await dm.getStarted();
   dm.setAppName('KoukokuAds');
+
   runApp(MyApp(dm: dm));
 }
 

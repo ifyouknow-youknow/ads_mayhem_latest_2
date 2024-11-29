@@ -339,7 +339,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: fa34ed9a92e0770762cf77d18b3f8b6b127a5ae5
+      resolved-ref: "3e9743de2cd6c669063153fcc45fb4ee7a954db5"
       url: "https://github.com/ifyouknow-youknow/flutter_library_latest.git"
     source: git
     version: "1.0.0+1"
