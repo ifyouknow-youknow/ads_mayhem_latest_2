@@ -81,7 +81,8 @@ class _BusinessProfileState extends State<BusinessProfile> {
   Future<void> _fetchBusinessAds() async {
     final ads = await firebase_GetAllDocumentsQueried(
         '${widget.dm.appName}_Campaigns', [
-      {'field': 'userId', 'operator': '==', 'value': widget.businessId}
+      {'field': 'userId', 'operator': '==', 'value': widget.businessId},
+      {'field': 'active', 'operator': '==', 'value': true}
     ]);
     setState(() {
       _ads = ads;

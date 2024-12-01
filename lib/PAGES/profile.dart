@@ -101,6 +101,7 @@ class _ProfileState extends State<Profile> {
     });
     await _fetchFavorites();
     await _fetchBusinessAds();
+    await _fetchScans();
     setState(() {
       widget.dm.setToggleLoading(false);
     });
@@ -550,70 +551,72 @@ class _ProfileState extends State<Profile> {
       if (_selectedSection == "Scans")
         Expanded(
           child: SingleChildScrollView(
-            child: Column(
-              children: [
-                //
-                for (var scan in _scans)
-                  SizedBox(
-                    width: double.infinity,
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            AsyncImageView(
-                              imagePath: scan['ad']['imagePath'],
-                              radius: 6,
-                              width: 60,
-                              height: 60,
-                            ),
-                            const SizedBox(
-                              width: 15,
-                            ),
-                            Flexible(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  TextView(
-                                    text: 'Scanned on ${formatDate(
-                                      DateTime.fromMillisecondsSinceEpoch(
-                                        scan['date'],
-                                      ),
-                                    )}',
-                                    size: 16,
-                                    weight: FontWeight.w500,
-                                  ),
-                                  if (scan['ad']['isCoupon'])
-                                    TextView(
-                                      text:
-                                          'expires on ${formatShortDate(DateTime.fromMillisecondsSinceEpoch(scan['ad']['expDate']))}',
-                                      wrap: true,
-                                      color: hexToColor("#1689FF"),
-                                    )
-                                ],
+            child: PaddingView(
+              child: Column(
+                children: [
+                  //
+                  for (var scan in _scans)
+                    SizedBox(
+                      width: double.infinity,
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              AsyncImageView(
+                                imagePath: scan['ad']['imagePath'],
+                                radius: 6,
+                                width: 60,
+                                height: 60,
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        )
-                      ],
-                    ),
-                  ),
-                //
-
-                if (_scans.isEmpty)
-                  const Center(
-                    child: PaddingView(
-                      child: TextView(
-                        text: 'no scans yet.',
-                        size: 16,
-                        font: 'poppins',
+                              const SizedBox(
+                                width: 15,
+                              ),
+                              Flexible(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    TextView(
+                                      text: 'Scanned on ${formatDate(
+                                        DateTime.fromMillisecondsSinceEpoch(
+                                          scan['date'],
+                                        ),
+                                      )}',
+                                      size: 16,
+                                      weight: FontWeight.w500,
+                                    ),
+                                    if (scan['ad']['isCoupon'])
+                                      TextView(
+                                        text:
+                                            'expires on ${formatShortDate(DateTime.fromMillisecondsSinceEpoch(scan['ad']['expDate']))}',
+                                        wrap: true,
+                                        color: hexToColor("#1689FF"),
+                                      )
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          )
+                        ],
                       ),
                     ),
-                  )
-              ],
+                  //
+
+                  if (_scans.isEmpty)
+                    const Center(
+                      child: PaddingView(
+                        child: TextView(
+                          text: 'no scans yet.',
+                          size: 16,
+                          font: 'poppins',
+                        ),
+                      ),
+                    )
+                ],
+              ),
             ),
           ),
         ),

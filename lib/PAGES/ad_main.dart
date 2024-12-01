@@ -15,6 +15,7 @@ import 'package:flutter_library_latest/COMPONENTS/roundedcorners_view.dart';
 import 'package:flutter_library_latest/COMPONENTS/text_view.dart';
 import 'package:flutter_library_latest/FUNCTIONS/array.dart';
 import 'package:flutter_library_latest/FUNCTIONS/colors.dart';
+import 'package:flutter_library_latest/FUNCTIONS/date.dart';
 import 'package:flutter_library_latest/FUNCTIONS/firebase.dart';
 import 'package:flutter_library_latest/FUNCTIONS/location.dart';
 import 'package:flutter_library_latest/FUNCTIONS/misc.dart';
@@ -35,6 +36,7 @@ class AdMain extends StatefulWidget {
 class _AdMainState extends State<AdMain> {
   Map<String, dynamic>? _business = null;
   List<dynamic> _ads = [];
+  List<dynamic> _scans = [];
   bool _isSaved = false;
   String _savedId = "";
   bool _isFollowing = false;
@@ -58,6 +60,17 @@ class _AdMainState extends State<AdMain> {
     ]);
     setState(() {
       _ads = removeObjById(docs, widget.ad['id']);
+    });
+  }
+
+  Future<void> _fetchScans() async {
+    final docs =
+        await firebase_GetAllDocumentsQueried('${widget.dm.appName}_Scans', [
+      {'field': 'userId', 'operator': '==', 'value': widget.dm.user['id']},
+      {'field': 'adId', 'operator': '==', 'value': widget.ad['id']}
+    ]);
+    setState(() {
+      _scans = docs;
     });
   }
 
@@ -143,6 +156,7 @@ class _AdMainState extends State<AdMain> {
     await _fetchBusinessInfo();
     await _fetchBusinessAds();
     await _checkIfFollowed();
+    await _fetchScans();
     setState(() {
       widget.dm.setToggleLoading(false);
     });
@@ -239,7 +253,7 @@ class _AdMainState extends State<AdMain> {
                               child: QrcodeView(
                                   size: getWidth(context) * 0.5,
                                   data:
-                                      '${widget.ad['id']}~${widget.dm.user['id']}'),
+                                      '${widget.dm.user['id']}~${widget.ad['id']}'),
                             ),
                           ),
                         //
@@ -255,23 +269,54 @@ class _AdMainState extends State<AdMain> {
                                 icon: Icons.qr_code,
                                 onPress: () {
                                   //
-                                  setState(() {
-                                    if (_showQR) {
-                                      setState(() {
-                                        _showQR = false;
-                                      });
-                                    } else {
-                                      setState(() {
-                                        _showQR = true;
-                                      });
-                                    }
-                                  });
+                                  if (_scans.isNotEmpty &&
+                                      !widget.ad['isRepeating']) {
+                                    setState(() {
+                                      widget.dm.setToggleAlert(true);
+                                      widget.dm
+                                          .setAlertTitle('Already Scanned.');
+                                      widget.dm.setAlertText(
+                                          'Oops! It looks like this QR code was already scanned.');
+                                    });
+                                  } else {
+                                    setState(() {
+                                      if (_showQR) {
+                                        setState(() {
+                                          _showQR = false;
+                                        });
+                                      } else {
+                                        setState(() {
+                                          _showQR = true;
+                                        });
+                                      }
+                                    });
+                                  }
                                 },
                               ),
                             ),
                           )
                       ]),
                     ),
+                    if (widget.ad['isCoupon'])
+                      Column(
+                        children: [
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          TextView(
+                            text: 'Expires on ${formatShortDate(
+                              DateTime.fromMillisecondsSinceEpoch(
+                                widget.ad['expDate'],
+                              ),
+                            )}',
+                            size: 16,
+                            font: 'poppins',
+                            color: hexToColor("#4D76FF"),
+                            weight: FontWeight.w500,
+                          ),
+                        ],
+                      ),
+
                     const SizedBox(
                       height: 15,
                     ),
