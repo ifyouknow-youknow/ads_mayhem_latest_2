@@ -76,8 +76,7 @@ class _SignUpState extends State<SignUp> {
       final success = await firebase_CreateDocument('Users', user.uid, {
         'firstName': _firstName.text,
         'lastName': _lastName.text,
-        'email':
-            '${widget.dm.appName.replaceAll(" ", "").toLowerCase()}_${_email.text}',
+        'email': _email.text,
         'geohash': _geohash
       });
       setState(() {
