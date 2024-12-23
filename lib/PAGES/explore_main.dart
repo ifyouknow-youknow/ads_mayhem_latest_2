@@ -57,7 +57,7 @@ class _ExploreMainState extends State<ExploreMain> {
       ];
     }
     final docs = await firebase_GetAllDocumentsQueriedLimitedDistanced(
-        '${widget.dm.appName}_Campaigns', queries, 80,
+        'Campaigns', queries, 80,
         geohash: widget.dm.user['geohash'],
         distance: widget.dm.user['distance'] ?? 30,
         lastDoc: lastDoc);
@@ -96,14 +96,20 @@ class _ExploreMainState extends State<ExploreMain> {
     final adId = ad['id'];
     if (!_adIds.contains(adId)) {
       // PROCEED
-      final success = await firebase_CreateDocument(
-          '${widget.dm.appName}_Views',
-          randomString(25),
+      final success = await firebase_CreateDocument('Views', randomString(25),
           {'adId': adId, 'userId': widget.dm.user['id']});
       if (success) {
         print('Ad was seen: $adId');
       }
     }
+  }
+
+  void onClickAd(ad) async {
+    await firebase_CreateDocument('Clicks', randomString(25), {
+      'adId': ad['id'],
+      'geohash': widget.dm.user['geohash'],
+      'userId': widget.dm.user['id']
+    });
   }
 
   @override
@@ -274,6 +280,7 @@ class _ExploreMainState extends State<ExploreMain> {
                               radius: 12,
                               child: ButtonView(
                                 onPress: () {
+                                  onClickAd(ad);
                                   nav_Push(
                                       context, AdMain(dm: widget.dm, ad: ad),
                                       () {

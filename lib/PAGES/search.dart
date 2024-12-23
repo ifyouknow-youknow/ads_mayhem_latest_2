@@ -30,8 +30,7 @@ class _SearchState extends State<Search> {
       widget.dm.setToggleLoading(true);
     });
 
-    final docs = await firebase_GetAllDocumentsQueried(
-        '${widget.dm.appName}_Businesses', [
+    final docs = await firebase_GetAllDocumentsQueried('Businesses', [
       {'field': 'name', 'operator': '==', 'value': _searchText.text}
     ]);
     if (docs.isNotEmpty) {

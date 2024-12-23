@@ -1,6 +1,4 @@
 import 'package:ads_mayhem_2/PAGES/explore_main.dart';
-import 'package:ads_mayhem_2/PAGES/explore_start.dart';
-import 'package:ads_mayhem_2/PAGES/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_library_latest/COMPONENTS/asyncimage_view.dart';
 import 'package:flutter_library_latest/COMPONENTS/border_view.dart';
@@ -45,16 +43,14 @@ class _AdMainState extends State<AdMain> {
   bool _showQR = false;
 
   Future<void> _fetchBusinessInfo() async {
-    final doc = await firebase_GetDocument(
-        '${widget.dm.appName}_Businesses', widget.ad['userId']);
+    final doc = await firebase_GetDocument('Businesses', widget.ad['userId']);
     setState(() {
       _business = doc;
     });
   }
 
   Future<void> _fetchBusinessAds() async {
-    final docs = await firebase_GetAllDocumentsQueried(
-        '${widget.dm.appName}_Campaigns', [
+    final docs = await firebase_GetAllDocumentsQueried('Campaigns', [
       {'field': 'active', 'operator': '==', 'value': true},
       {'field': 'userId', 'operator': '==', 'value': widget.ad['userId']}
     ]);
@@ -64,8 +60,7 @@ class _AdMainState extends State<AdMain> {
   }
 
   Future<void> _fetchScans() async {
-    final docs =
-        await firebase_GetAllDocumentsQueried('${widget.dm.appName}_Scans', [
+    final docs = await firebase_GetAllDocumentsQueried('Scans', [
       {'field': 'userId', 'operator': '==', 'value': widget.dm.user['id']},
       {'field': 'adId', 'operator': '==', 'value': widget.ad['id']}
     ]);
@@ -76,14 +71,14 @@ class _AdMainState extends State<AdMain> {
 
   Future<void> _onSaveUnsave() async {
     if (_isSaved) {
-      await firebase_DeleteDocument('${widget.dm.appName}_Favorites', _savedId);
+      await firebase_DeleteDocument('Favorites', _savedId);
       setState(() {
         _savedId = "";
         _isSaved = false;
       });
     } else {
       final savedId = randomString(25);
-      await firebase_CreateDocument('${widget.dm.appName}_Favorites', savedId,
+      await firebase_CreateDocument('Favorites', savedId,
           {'adId': widget.ad['id'], 'userId': widget.dm.user['id']});
 
       setState(() {
@@ -94,8 +89,7 @@ class _AdMainState extends State<AdMain> {
   }
 
   Future<void> _checkIfSaved() async {
-    final docs = await firebase_GetAllDocumentsQueried(
-        '${widget.dm.appName}_Favorites', [
+    final docs = await firebase_GetAllDocumentsQueried('Favorites', [
       {'field': 'adId', "operator": '==', 'value': widget.ad['id']},
       {'field': 'userId', "operator": '==', 'value': widget.dm.user['id']},
     ]);
@@ -111,16 +105,14 @@ class _AdMainState extends State<AdMain> {
   Future<void> _onFollowUnfollow() async {
 //
     if (_isFollowing) {
-      await firebase_DeleteDocument(
-          '${widget.dm.appName}_Following', _followedId);
+      await firebase_DeleteDocument('Following', _followedId);
       setState(() {
         _isFollowing = false;
         _followedId = "";
       });
     } else {
       final followedId = randomString(25);
-      await firebase_CreateDocument(
-          '${widget.dm.appName}_Following', followedId, {
+      await firebase_CreateDocument('Following', followedId, {
         'businessId': _business!['id'],
         'businessName': _business!['name'],
         'userId': widget.dm.user['id']
@@ -134,8 +126,7 @@ class _AdMainState extends State<AdMain> {
 
   Future<void> _checkIfFollowed() async {
 //
-    final docs = await firebase_GetAllDocumentsQueried(
-        '${widget.dm.appName}_Following', [
+    final docs = await firebase_GetAllDocumentsQueried('Following', [
       {'field': 'businessId', 'operator': '==', 'value': _business!['id']},
       {'field': 'userId', 'operator': '==', 'value': widget.dm.user['id']},
     ]);
@@ -257,7 +248,7 @@ class _AdMainState extends State<AdMain> {
                             ),
                           ),
                         //
-                        if (widget.ad['isCoupon'])
+                        if (widget.ad['isNotQR'] != true)
                           Positioned(
                             bottom: 0,
                             right: 0,
@@ -297,7 +288,7 @@ class _AdMainState extends State<AdMain> {
                           )
                       ]),
                     ),
-                    if (widget.ad['isCoupon'])
+                    if (widget.ad['isNotQR'] != true)
                       Column(
                         children: [
                           const SizedBox(
@@ -352,41 +343,58 @@ class _AdMainState extends State<AdMain> {
                                     spacing: -1,
                                     weight: FontWeight.w500,
                                   ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  TextView(
+                                    text: _business!['description']
+                                        .replaceAll('jjj', '\n'),
+                                    size: 16,
+                                    wrap: true,
+                                    font: 'poppins',
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
                                   Row(
                                     children: [
                                       // PHONE
-                                      IconButtonView(
-                                        backgroundColor: hexToColor("#44F64A"),
-                                        width: 30,
-                                        icon: Icons.call,
-                                        onPress: () async {
-                                          await callPhoneNumber(
-                                              _business!['phone']);
-                                        },
-                                      ),
+                                      if (widget.ad['isHidePhone'] != true)
+                                        IconButtonView(
+                                          backgroundColor:
+                                              hexToColor("#44F64A"),
+                                          width: 30,
+                                          icon: Icons.call,
+                                          onPress: () async {
+                                            await callPhoneNumber(
+                                                _business!['phone']);
+                                          },
+                                        ),
                                       const SizedBox(
                                         width: 8,
                                       ),
-                                      IconButtonView(
-                                        backgroundColor: hexToColor("#F64451"),
-                                        iconColor: Colors.white,
-                                        width: 30,
-                                        icon: Icons.directions_car,
-                                        onPress: () async {
-                                          setState(() {
-                                            widget.dm.setToggleLoading(true);
-                                          });
-                                          await getDirections({
-                                            'latitude': Geohash.decode(widget
-                                                .ad['geohash'])['latitude'],
-                                            'longitude': Geohash.decode(widget
-                                                .ad['geohash'])['longitude'],
-                                          });
-                                          setState(() {
-                                            widget.dm.setToggleLoading(false);
-                                          });
-                                        },
-                                      ),
+                                      if (widget.ad['isHideLocation'] != true)
+                                        IconButtonView(
+                                          backgroundColor:
+                                              hexToColor("#F64451"),
+                                          iconColor: Colors.white,
+                                          width: 30,
+                                          icon: Icons.directions_car,
+                                          onPress: () async {
+                                            setState(() {
+                                              widget.dm.setToggleLoading(true);
+                                            });
+                                            await getDirections({
+                                              'latitude': Geohash.decode(widget
+                                                  .ad['geohash'])['latitude'],
+                                              'longitude': Geohash.decode(widget
+                                                  .ad['geohash'])['longitude'],
+                                            });
+                                            setState(() {
+                                              widget.dm.setToggleLoading(false);
+                                            });
+                                          },
+                                        ),
                                       const SizedBox(
                                         width: 8,
                                       ),
@@ -404,6 +412,7 @@ class _AdMainState extends State<AdMain> {
                                       const SizedBox(
                                         width: 8,
                                       ),
+
                                       Expanded(
                                         child: ButtonView(
                                             child: PillView(
@@ -441,21 +450,22 @@ class _AdMainState extends State<AdMain> {
                             const SizedBox(
                               height: 15,
                             ),
-                            MapView(
-                                isScrolling: false,
-                                isZoomable: false,
-                                height: 160,
-                                locations: [
-                                  {
-                                    'latitude': Geohash.decode(
-                                        widget.ad['geohash'])['latitude'],
-                                    'longitude': Geohash.decode(
-                                        widget.ad['geohash'])['longitude']
-                                  }
-                                ],
-                                onMarkerTap: (loc) {
-                                  print(loc);
-                                })
+                            if (widget.ad['isHideLocation'] != true)
+                              MapView(
+                                  isScrolling: false,
+                                  isZoomable: false,
+                                  height: 160,
+                                  locations: [
+                                    {
+                                      'latitude': Geohash.decode(
+                                          widget.ad['geohash'])['latitude'],
+                                      'longitude': Geohash.decode(
+                                          widget.ad['geohash'])['longitude']
+                                    }
+                                  ],
+                                  onMarkerTap: (loc) {
+                                    print(loc);
+                                  })
                           ],
                         ),
                       ),

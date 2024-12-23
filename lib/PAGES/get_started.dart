@@ -27,7 +27,7 @@ class _GetStartedState extends State<GetStarted> {
       widget.dm.setToggleLoading(true);
     });
 
-    final signedIn = await widget.dm.checkUser('${widget.dm.appName}_Users');
+    final signedIn = await widget.dm.checkUser('Users');
     setState(() {
       widget.dm.setToggleLoading(false);
     });

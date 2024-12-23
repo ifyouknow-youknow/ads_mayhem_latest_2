@@ -50,19 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyArBMWW4ZXFp0MUOR2b681nNe7JqsyCaxQ',
-    appId: '1:264501829712:android:88737a6f0512f946fb7155',
-    messagingSenderId: '264501829712',
-    projectId: 'iic-development',
-    storageBucket: 'iic-development.appspot.com',
+    apiKey: 'AIzaSyCy4zuPrZL34o5PnQi5fdZ4og34GI6TVl0',
+    appId: '1:668047015403:android:8909de6db8b677b5c4edae',
+    messagingSenderId: '668047015403',
+    projectId: 'ads-mayhem',
+    storageBucket: 'ads-mayhem.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyB-9QWNgWZZ5pOlxEVbsyeyKSBPQGMWXWk',
-    appId: '1:264501829712:ios:9cd12b9e9896d92cfb7155',
-    messagingSenderId: '264501829712',
-    projectId: 'iic-development',
-    storageBucket: 'iic-development.appspot.com',
+    apiKey: 'AIzaSyAoWuWTGXEkdymxITdWWTs4ROiAwXZ254s',
+    appId: '1:668047015403:ios:e2455369e44194f6c4edae',
+    messagingSenderId: '668047015403',
+    projectId: 'ads-mayhem',
+    storageBucket: 'ads-mayhem.firebasestorage.app',
     iosBundleId: 'com.iicdev.AdsMahem',
   );
+
 }

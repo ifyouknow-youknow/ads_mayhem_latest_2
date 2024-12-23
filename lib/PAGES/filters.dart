@@ -36,8 +36,8 @@ class _FiltersState extends State<Filters> {
 
   void onChangeDistance() async {
     print(widget.dm.user);
-    final success = await firebase_UpdateDocument('${widget.dm.appName}_Users',
-        widget.dm.user['id'], {'distance': _distance});
+    final success = await firebase_UpdateDocument(
+        'Users', widget.dm.user['id'], {'distance': _distance});
     if (success) {
       setState(() {
         widget.dm.setBubbleText('distance saved.');
@@ -60,14 +60,14 @@ class _FiltersState extends State<Filters> {
   void onChangeCategory(Map<String, dynamic> category) async {
     if (_selectedCategory == category['category']) {
       await firebase_UpdateDocument(
-          '${widget.dm.appName}_Users', widget.dm.user['id'], {'category': ""});
+          'Users', widget.dm.user['id'], {'category': ""});
       setState(() {
         widget.dm.setUser({...widget.dm.user, 'category': ""});
         _selectedCategory = "";
       });
     } else {
-      await firebase_UpdateDocument('${widget.dm.appName}_Users',
-          widget.dm.user['id'], {'category': category['category']});
+      await firebase_UpdateDocument(
+          'Users', widget.dm.user['id'], {'category': category['category']});
       setState(() {
         widget.dm
             .setUser({...widget.dm.user, 'category': category['category']});
@@ -87,7 +87,7 @@ class _FiltersState extends State<Filters> {
 
   void onClearCategory() async {
     await firebase_UpdateDocument(
-        '${widget.dm.appName}_Users', widget.dm.user['id'], {'category': ""});
+        'Users', widget.dm.user['id'], {'category': ""});
     setState(() {
       widget.dm.setToggleBubble(true);
       widget.dm.setBubbleText('category cleared');
@@ -104,8 +104,8 @@ class _FiltersState extends State<Filters> {
   void onChangeLocation(Map<String, dynamic> loc) async {
     final geohash = Geohash.encode(loc['latitude'], loc['longitude']);
 
-    final success = await firebase_UpdateDocument('${widget.dm.appName}_Users',
-        widget.dm.user['id'], {'geohash': geohash});
+    final success = await firebase_UpdateDocument(
+        'Users', widget.dm.user['id'], {'geohash': geohash});
     if (success) {
       setState(() {
         widget.dm.setUser({...widget.dm.user, 'geohash': geohash});
@@ -128,8 +128,7 @@ class _FiltersState extends State<Filters> {
       });
     }
 
-    final docs =
-        await firebase_GetAllDocuments('${widget.dm.appName}_Categories');
+    final docs = await firebase_GetAllDocuments('Categories');
     setState(() {
       _categories = sortArrayByProperty(docs, 'category');
     });

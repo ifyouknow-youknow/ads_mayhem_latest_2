@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyB-9QWNgWZZ5pOlxEVbsyeyKSBPQGMWXWk</string>
+	<string>AIzaSyAoWuWTGXEkdymxITdWWTs4ROiAwXZ254s</string>
 	<key>GCM_SENDER_ID</key>
-	<string>264501829712</string>
+	<string>668047015403</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.iicdev.AdsMahem</string>
 	<key>PROJECT_ID</key>
-	<string>iic-development</string>
+	<string>ads-mayhem</string>
 	<key>STORAGE_BUCKET</key>
-	<string>iic-development.appspot.com</string>
+	<string>ads-mayhem.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:264501829712:ios:9cd12b9e9896d92cfb7155</string>
+	<string>1:668047015403:ios:e2455369e44194f6c4edae</string>
 </dict>
 </plist>

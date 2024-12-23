@@ -33,24 +33,21 @@ class _BusinessProfileState extends State<BusinessProfile> {
 
   Future<void> _fetchBusinessInfo() async {
     //
-    final doc = await firebase_GetDocument(
-        '${widget.dm.appName}_Businesses', widget.businessId);
+    final doc = await firebase_GetDocument('Businesses', widget.businessId);
     _business = doc;
   }
 
   Future<void> _onFollowUnfollow() async {
 //
     if (_isFollowing) {
-      await firebase_DeleteDocument(
-          '${widget.dm.appName}_Following', _followedId);
+      await firebase_DeleteDocument('Following', _followedId);
       setState(() {
         _isFollowing = false;
         _followedId = "";
       });
     } else {
       final followedId = randomString(25);
-      await firebase_CreateDocument(
-          '${widget.dm.appName}_Following', followedId, {
+      await firebase_CreateDocument('Following', followedId, {
         'businessId': _business!['id'],
         'businessName': _business!['name'],
         'userId': widget.dm.user['id']
@@ -64,8 +61,7 @@ class _BusinessProfileState extends State<BusinessProfile> {
 
   Future<void> _checkIfFollowed() async {
 //
-    final docs = await firebase_GetAllDocumentsQueried(
-        '${widget.dm.appName}_Following', [
+    final docs = await firebase_GetAllDocumentsQueried('Following', [
       {'field': 'businessId', 'operator': '==', 'value': _business!['id']},
       {'field': 'userId', 'operator': '==', 'value': widget.dm.user['id']},
     ]);
@@ -79,8 +75,7 @@ class _BusinessProfileState extends State<BusinessProfile> {
   }
 
   Future<void> _fetchBusinessAds() async {
-    final ads = await firebase_GetAllDocumentsQueried(
-        '${widget.dm.appName}_Campaigns', [
+    final ads = await firebase_GetAllDocumentsQueried('Campaigns', [
       {'field': 'userId', 'operator': '==', 'value': widget.businessId},
       {'field': 'active', 'operator': '==', 'value': true}
     ]);

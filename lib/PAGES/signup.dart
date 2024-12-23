@@ -70,11 +70,10 @@ class _SignUpState extends State<SignUp> {
       widget.dm.setToggleLoading(true);
     });
 
-    final user = await auth_CreateUser(_email.text, _password.text, widget.dm);
+    final user = await auth_CreateUser(_email.text, _password.text);
 
     if (user != null) {
-      final success = await firebase_CreateDocument(
-          '${widget.dm.appName}_Users', user.uid, {
+      final success = await firebase_CreateDocument('Users', user.uid, {
         'firstName': _firstName.text,
         'lastName': _lastName.text,
         'email':

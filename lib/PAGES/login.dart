@@ -39,10 +39,9 @@ class _LoginState extends State<Login> {
     setState(() {
       widget.dm.setToggleLoading(true);
     });
-    final user = await auth_SignIn(
-        _email.text, _password.text, '${widget.dm.appName}_Users', widget.dm);
+    final user = await auth_SignIn(_email.text, _password.text, 'Users');
     if (user != null) {
-      await widget.dm.checkUser('${widget.dm.appName}_Users');
+      await widget.dm.checkUser('Users');
       setState(() {
         widget.dm.setToggleLoading(false);
       });
@@ -187,7 +186,7 @@ class _LoginState extends State<Login> {
                         onPress: () async {
                           //
                           final success =
-                              await auth_ForgotPassword(_email.text, widget.dm);
+                              await auth_ForgotPassword(_email.text);
                           if (success) {
                             setState(() {
                               widget.dm.setToggleAlert(true);

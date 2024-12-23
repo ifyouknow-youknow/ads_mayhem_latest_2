@@ -1,4 +1,6 @@
 import 'package:ads_mayhem_2/PAGES/get_started.dart';
+import 'package:ads_mayhem_2/firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_library_latest/MODELS/datamaster.dart';
 
@@ -6,7 +8,9 @@ void main() async {
   final dm = DataMaster();
   await dm.getStarted();
   dm.setAppName('KoukokuAds');
-
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(MyApp(dm: dm));
 }
 

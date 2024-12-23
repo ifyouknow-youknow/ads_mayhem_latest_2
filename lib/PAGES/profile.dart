@@ -37,13 +37,11 @@ class _ProfileState extends State<Profile> {
 
   Future<void> _fetchFavorites() async {
     final things = [];
-    final docs = await firebase_GetAllDocumentsQueried(
-        '${widget.dm.appName}_Favorites', [
+    final docs = await firebase_GetAllDocumentsQueried('Favorites', [
       {'field': 'userId', 'operator': '==', 'value': widget.dm.user['id']}
     ]);
     for (var fave in docs) {
-      final doc = await firebase_GetDocument(
-          '${widget.dm.appName}_Campaigns', fave['adId']);
+      final doc = await firebase_GetDocument('Campaigns', fave['adId']);
       things.add(doc);
     }
 
@@ -54,13 +52,12 @@ class _ProfileState extends State<Profile> {
 
   Future<void> _fetchBusinessAds() async {
     final objs = [];
-    final followed = await firebase_GetAllDocumentsQueried(
-        '${widget.dm.appName}_Following', [
+    final followed = await firebase_GetAllDocumentsQueried('Following', [
       {'field': 'userId', 'operator': '==', 'value': widget.dm.user['id']}
     ]);
     for (var fol in followed) {
       final ads = await firebase_GetAllDocumentsQueriedLimited(
-          '${widget.dm.appName}_Campaigns',
+          'Campaigns',
           [
             {'field': 'userId', 'operator': '==', 'value': fol['businessId']}
           ],
@@ -75,7 +72,7 @@ class _ProfileState extends State<Profile> {
 
   Future<void> _fetchScans() async {
     final docs = await firebase_GetAllDocumentsOrderedQueriedLimited(
-        '${widget.dm.appName}_Scans',
+        'Scans',
         [
           {'field': 'userId', 'operator': '==', 'value': widget.dm.user['id']}
         ],
@@ -85,8 +82,7 @@ class _ProfileState extends State<Profile> {
     final all = [];
     for (var scan in docs) {
       final adId = scan['adId'];
-      final ad =
-          await firebase_GetDocument('${widget.dm.appName}_Campaigns', adId);
+      final ad = await firebase_GetDocument('Campaigns', adId);
       all.add({...scan, 'ad': ad});
     }
 
@@ -155,53 +151,48 @@ class _ProfileState extends State<Profile> {
                   final success = await auth_DeleteUser(user);
                   if (success) {
                     // SCANS
-                    final scans = await firebase_GetAllDocumentsQueried(
-                        '${widget.dm.appName}_Scans', [
+                    final scans =
+                        await firebase_GetAllDocumentsQueried('Scans', [
                       {'field': 'userId', 'operator': '==', 'value': userId}
                     ]);
                     for (var scan in scans) {
-                      await firebase_DeleteDocument(
-                          '${widget.dm.appName}_Scans', scan['id']);
+                      await firebase_DeleteDocument('Scans', scan['id']);
                     }
                     // FOLLOWING
-                    final follows = await firebase_GetAllDocumentsQueried(
-                        '${widget.dm.appName}_Following', [
+                    final follows =
+                        await firebase_GetAllDocumentsQueried('Following', [
                       {'field': 'userId', 'operator': '==', 'value': userId}
                     ]);
                     for (var follow in follows) {
-                      await firebase_DeleteDocument(
-                          '${widget.dm.appName}_Following', follow['id']);
+                      await firebase_DeleteDocument('Following', follow['id']);
                     }
                     // FAVORITES
-                    final faves = await firebase_GetAllDocumentsQueried(
-                        '${widget.dm.appName}_Favorites', [
+                    final faves =
+                        await firebase_GetAllDocumentsQueried('Favorites', [
                       {'field': 'userId', 'operator': '==', 'value': userId}
                     ]);
                     for (var fav in faves) {
-                      await firebase_DeleteDocument(
-                          '${widget.dm.appName}_Favorites', fav['id']);
+                      await firebase_DeleteDocument('Favorites', fav['id']);
                     }
                     // VIEWS
-                    final views = await firebase_GetAllDocumentsQueried(
-                        '${widget.dm.appName}_Views', [
+                    final views =
+                        await firebase_GetAllDocumentsQueried('Views', [
                       {'field': 'userId', 'operator': '==', 'value': userId}
                     ]);
                     for (var view in views) {
-                      await firebase_DeleteDocument(
-                          '${widget.dm.appName}_Views', view['id']);
+                      await firebase_DeleteDocument('Views', view['id']);
                     }
                     // CLICKS
-                    final clicks = await firebase_GetAllDocumentsQueried(
-                        '${widget.dm.appName}_Clicks', [
+                    final clicks =
+                        await firebase_GetAllDocumentsQueried('Clicks', [
                       {'field': 'userId', 'operator': '==', 'value': userId}
                     ]);
                     for (var click in clicks) {
-                      await firebase_DeleteDocument(
-                          '${widget.dm.appName}_Clicks', click['id']);
+                      await firebase_DeleteDocument('Clicks', click['id']);
                     }
                     // DOC
-                    final success = await firebase_DeleteDocument(
-                        '${widget.dm.appName}_Users', userId);
+                    final success =
+                        await firebase_DeleteDocument('Users', userId);
                     if (success) {
                       nav_PushAndRemove(context, GetStarted(dm: widget.dm));
                       setState(() {

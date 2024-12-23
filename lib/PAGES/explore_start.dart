@@ -8,9 +8,11 @@ import 'package:flutter_library_latest/COMPONENTS/detected_view.dart';
 import 'package:flutter_library_latest/COMPONENTS/iconbutton_view.dart';
 import 'package:flutter_library_latest/COMPONENTS/image_view.dart';
 import 'package:flutter_library_latest/COMPONENTS/main_view.dart';
+import 'package:flutter_library_latest/COMPONENTS/map_view.dart';
 import 'package:flutter_library_latest/COMPONENTS/padding_view.dart';
 import 'package:flutter_library_latest/COMPONENTS/pill_view.dart';
 import 'package:flutter_library_latest/COMPONENTS/text_view.dart';
+import 'package:flutter_library_latest/FUNCTIONS/array.dart';
 import 'package:flutter_library_latest/FUNCTIONS/colors.dart';
 import 'package:flutter_library_latest/FUNCTIONS/firebase.dart';
 import 'package:flutter_library_latest/FUNCTIONS/misc.dart';
@@ -33,11 +35,12 @@ class _ExploreStartState extends State<ExploreStart> {
   dynamic lastDoc;
   bool _noMore = false;
   List<String> _adIds = [];
+  String _geohash = "";
   //
   //
   Future<void> _fetchAllAds() async {
     final docs = await firebase_GetAllDocumentsQueriedLimitedDistanced(
-        '${widget.dm.appName}_Campaigns',
+        'Campaigns',
         [
           {'field': 'active', 'operator': '==', 'value': true}
         ],
@@ -71,14 +74,17 @@ class _ExploreStartState extends State<ExploreStart> {
     final adId = ad['id'];
     if (!_adIds.contains(adId)) {
       // PROCEED
-      final success = await firebase_CreateDocument(
-          '${widget.dm.appName}_Views',
-          randomString(25),
+      final success = await firebase_CreateDocument('Views', randomString(25),
           {'adId': adId, 'userId': widget.dm.user['id']});
       if (success) {
         print('Ad was seen: $adId');
       }
     }
+  }
+
+  void onClickAd(ad) async {
+    await firebase_CreateDocument('Clicks', randomString(25),
+        {'adId': ad['id'], 'geohash': _geohash, 'userId': ""});
   }
 
   void init() async {
@@ -137,101 +143,140 @@ class _ExploreStartState extends State<ExploreStart> {
               ],
             ),
           ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: PaddingView(
-                paddingTop: 5,
-                paddingBottom: 5,
-                paddingLeft: 6,
-                paddingRight: 6,
-                child: Column(
-                  children: [
-                    for (var ad in _ads)
-                      DetectedView(
-                        onViewed: () {
-                          onAdSeen(ad);
-                        },
-                        child: Column(
-                          children: [
-                            BorderView(
-                              allColor: hexToColor("#E4E6F6"),
-                              radius: 12,
-                              child: ButtonView(
-                                onPress: () {
-                                  nav_Push(
-                                      context, AdStart(dm: widget.dm, ad: ad),
-                                      () {
-                                    _fetchAllAds();
-                                  });
-                                },
-                                child: AsyncImageView(
-                                  imagePath: ad['imagePath'],
-                                  width: getWidth(context),
-                                  height: getWidth(context) * 0.95,
-                                  radius: 12,
-                                  objectFit: BoxFit.fill,
+          if (_geohash.isEmpty)
+            PaddingView(
+              child: Column(
+                children: [
+                  const TextView(
+                    text:
+                        'Could you please let us know the location where you’d like to see ads?',
+                    size: 16,
+                  ),
+                  MapView(
+                      isSearchable: true,
+                      locations: [
+                        {
+                          'latitude': testCoordinates.latitude,
+                          'longitude': testCoordinates.longitude
+                        }
+                      ],
+                      onMarkerTap: (loc) {
+                        //
+                        final geohash =
+                            Geohash.encode(loc['latitude'], loc['longitude']);
+                        setState(() {
+                          _geohash = geohash;
+                        });
+                      }),
+                  const PaddingView(
+                    child: TextView(
+                      text: 'Tap on the marker to confirm the location.',
+                      size: 17,
+                      color: Colors.blueAccent,
+                      weight: FontWeight.w500,
+                    ),
+                  )
+                ],
+              ),
+            ),
+          if (_geohash.isNotEmpty)
+            Expanded(
+              child: SingleChildScrollView(
+                child: PaddingView(
+                  paddingTop: 5,
+                  paddingBottom: 5,
+                  paddingLeft: 6,
+                  paddingRight: 6,
+                  child: Column(
+                    children: [
+                      for (var ad in removeDupesByProperty(
+                          _ads.cast<Map<String, dynamic>>(), 'id'))
+                        DetectedView(
+                          onViewed: () {
+                            onAdSeen(ad);
+                          },
+                          child: Column(
+                            children: [
+                              BorderView(
+                                allColor: hexToColor("#E4E6F6"),
+                                radius: 12,
+                                child: ButtonView(
+                                  onPress: () {
+                                    onClickAd(ad);
+                                    nav_Push(
+                                        context, AdStart(dm: widget.dm, ad: ad),
+                                        () {
+                                      _fetchAllAds();
+                                    });
+                                  },
+                                  child: AsyncImageView(
+                                    imagePath: ad['imagePath'],
+                                    width: getWidth(context),
+                                    height: getWidth(context) * 0.95,
+                                    radius: 12,
+                                    objectFit: BoxFit.fill,
+                                  ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            )
-                          ],
-                        ),
-                      ),
-                    if (!_noMore)
-                      ButtonView(
-                        child: const PillView(
-                          backgroundColor: Colors.black,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.waving_hand_outlined,
-                                size: 22,
-                                color: Colors.white,
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              TextView(
-                                text: 'see more',
-                                size: 16,
-                                font: 'poppins',
-                                color: Colors.white,
+                              const SizedBox(
+                                height: 10,
                               )
                             ],
                           ),
                         ),
-                        onPress: () async {
-                          // GET MORE
-                          setState(() {
-                            widget.dm.setToggleLoading(true);
-                          });
-                          await _fetchAllAds();
-                          setState(() {
-                            widget.dm.setToggleLoading(false);
-                          });
-                        },
-                      )
-                    else
-                      const PaddingView(
-                        child: TextView(
-                          text: 'no more ads.',
-                          font: 'poppins',
-                          size: 20,
-                          weight: FontWeight.w500,
-                          spacing: -1,
+                      if (!_noMore)
+                        ButtonView(
+                          child: const PillView(
+                            backgroundColor: Colors.black,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.waving_hand_outlined,
+                                  size: 22,
+                                  color: Colors.white,
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                TextView(
+                                  text: 'see more',
+                                  size: 16,
+                                  font: 'poppins',
+                                  color: Colors.white,
+                                )
+                              ],
+                            ),
+                          ),
+                          onPress: () async {
+                            // GET MORE
+                            setState(() {
+                              widget.dm.setToggleLoading(true);
+                            });
+                            await _fetchAllAds();
+                            setState(() {
+                              widget.dm.setToggleLoading(false);
+                            });
+                          },
+                        )
+                      else
+                        const PaddingView(
+                          child: TextView(
+                            text: 'no more ads.',
+                            font: 'poppins',
+                            size: 20,
+                            weight: FontWeight.w500,
+                            spacing: -1,
+                          ),
                         ),
-                      ),
-                    const SizedBox(
-                      height: 25,
-                    )
-                  ],
+                      const SizedBox(
+                        height: 25,
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
         ]);
   }
 }

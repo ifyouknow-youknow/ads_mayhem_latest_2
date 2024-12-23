@@ -36,16 +36,14 @@ class _AdStartState extends State<AdStart> {
   List<dynamic> _ads = [];
 
   Future<void> _fetchBusinessInfo() async {
-    final doc = await firebase_GetDocument(
-        '${widget.dm.appName}_Businesses', widget.ad['userId']);
+    final doc = await firebase_GetDocument('Businesses', widget.ad['userId']);
     setState(() {
       _business = doc;
     });
   }
 
   Future<void> _fetchBusinessAds() async {
-    final docs = await firebase_GetAllDocumentsQueried(
-        '${widget.dm.appName}_Campaigns', [
+    final docs = await firebase_GetAllDocumentsQueried('Campaigns', [
       {'field': 'active', 'operator': '==', 'value': true},
       {'field': 'userId', 'operator': '==', 'value': widget.ad['userId']}
     ]);
@@ -174,41 +172,52 @@ class _AdStartState extends State<AdStart> {
                                     spacing: -1,
                                     weight: FontWeight.w500,
                                   ),
+                                  const SizedBox(height: 10),
+                                  TextView(
+                                      text: _business!['description']
+                                          .replaceAll('jjj', '\n'),
+                                      size: 16,
+                                      font: 'poppins',
+                                      wrap: true),
                                   Row(
                                     children: [
                                       // PHONE
-                                      IconButtonView(
-                                        backgroundColor: hexToColor("#44F64A"),
-                                        width: 30,
-                                        icon: Icons.call,
-                                        onPress: () async {
-                                          await callPhoneNumber(
-                                              _business!['phone']);
-                                        },
-                                      ),
+                                      if (widget.ad['isHidePhone'] != true)
+                                        IconButtonView(
+                                          backgroundColor:
+                                              hexToColor("#44F64A"),
+                                          width: 30,
+                                          icon: Icons.call,
+                                          onPress: () async {
+                                            await callPhoneNumber(
+                                                _business!['phone']);
+                                          },
+                                        ),
                                       const SizedBox(
                                         width: 8,
                                       ),
-                                      IconButtonView(
-                                        backgroundColor: hexToColor("#F64451"),
-                                        iconColor: Colors.white,
-                                        width: 30,
-                                        icon: Icons.directions_car,
-                                        onPress: () async {
-                                          setState(() {
-                                            widget.dm.setToggleLoading(true);
-                                          });
-                                          await getDirections({
-                                            'latitude': Geohash.decode(widget
-                                                .ad['geohash'])['latitude'],
-                                            'longitude': Geohash.decode(widget
-                                                .ad['geohash'])['longitude'],
-                                          });
-                                          setState(() {
-                                            widget.dm.setToggleLoading(false);
-                                          });
-                                        },
-                                      ),
+                                      if (widget.ad['isHideLocation'] != true)
+                                        IconButtonView(
+                                          backgroundColor:
+                                              hexToColor("#F64451"),
+                                          iconColor: Colors.white,
+                                          width: 30,
+                                          icon: Icons.directions_car,
+                                          onPress: () async {
+                                            setState(() {
+                                              widget.dm.setToggleLoading(true);
+                                            });
+                                            await getDirections({
+                                              'latitude': Geohash.decode(widget
+                                                  .ad['geohash'])['latitude'],
+                                              'longitude': Geohash.decode(widget
+                                                  .ad['geohash'])['longitude'],
+                                            });
+                                            setState(() {
+                                              widget.dm.setToggleLoading(false);
+                                            });
+                                          },
+                                        ),
                                       const SizedBox(
                                         width: 8,
                                       ),
@@ -234,21 +243,22 @@ class _AdStartState extends State<AdStart> {
                             const SizedBox(
                               height: 15,
                             ),
-                            MapView(
-                                isScrolling: false,
-                                isZoomable: false,
-                                height: 160,
-                                locations: [
-                                  {
-                                    'latitude': Geohash.decode(
-                                        widget.ad['geohash'])['latitude'],
-                                    'longitude': Geohash.decode(
-                                        widget.ad['geohash'])['longitude']
-                                  }
-                                ],
-                                onMarkerTap: (loc) {
-                                  print(loc);
-                                })
+                            if (widget.ad['isHideLocation'] != true)
+                              MapView(
+                                  isScrolling: false,
+                                  isZoomable: false,
+                                  height: 160,
+                                  locations: [
+                                    {
+                                      'latitude': Geohash.decode(
+                                          widget.ad['geohash'])['latitude'],
+                                      'longitude': Geohash.decode(
+                                          widget.ad['geohash'])['longitude']
+                                    }
+                                  ],
+                                  onMarkerTap: (loc) {
+                                    print(loc);
+                                  })
                           ],
                         ),
                       ),
