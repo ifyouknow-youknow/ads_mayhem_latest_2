@@ -81,6 +81,13 @@ class _SignUpState extends State<SignUp> {
       });
       setState(() {
         widget.dm.setToggleLoading(false);
+        widget.dm.setUser({
+          'id': user.uid,
+          'firstName': _firstName.text,
+          'lastName': _lastName.text,
+          'email': _email.text,
+          'geohash': _geohash
+        });
       });
       if (success) {
         nav_PushAndRemove(context, ExploreMain(dm: widget.dm));
